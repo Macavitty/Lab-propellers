@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="java">
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/Загрузки/JsonPath-master.zip!/JsonPath-master/json-path-assert/src/main/java" />
+      <root url="jar://$USER_HOME$/Загрузки/JsonPath-master.zip!/JsonPath-master/json-path-assert/src/test/java" />
+      <root url="jar://$USER_HOME$/Загрузки/JsonPath-master.zip!/JsonPath-master/json-path-web-test/src/main/java" />
+      <root url="jar://$USER_HOME$/Загрузки/JsonPath-master.zip!/JsonPath-master/json-path/src/main/java" />
+      <root url="jar://$USER_HOME$/Загрузки/JsonPath-master.zip!/JsonPath-master/json-path/src/test/java" />
+    </SOURCES>
+  </library>
+</component>

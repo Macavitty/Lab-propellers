@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="examples">
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/Загрузки/webcam-capture-0.3.12-dist.zip!/examples" />
+      <root url="jar://$USER_HOME$/Загрузки/webcam-capture-0.3.12-dist.zip!/src" />
+    </SOURCES>
+  </library>
+</component>
