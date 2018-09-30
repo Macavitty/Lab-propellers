@@ -32,8 +32,8 @@ public class AuthorizationForm extends JFrame {
         this.serverWindow = serverWindow;
 
         // TODO put this in some file
-        trueLogin = "admin";
-        truePassword = "october";
+        trueLogin = "a";
+        truePassword = "a";
 
         showButton.addActionListener((event) -> {
             password.setEchoChar(showButton.isSelected() ? 0 : password.getEchoChar());

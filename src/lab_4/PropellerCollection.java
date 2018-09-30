@@ -6,7 +6,6 @@ import lab_4.story_components.Karlson;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -25,7 +24,7 @@ public class PropellerCollection implements Serializable {
     }
 
     /**
-     * Метод для записи пропеллеров из файла в формате csv в коллекцию.
+     * Метод для записи пропеллеров из файла в формате csv в коллекцию
      */
     public String load() {
 
@@ -33,7 +32,7 @@ public class PropellerCollection implements Serializable {
          * using InputStreamReader
          *
          * The header:
-         * MODEL, YEAR, EFFICIENCY, SPEED, MAXWEIGHT, FANS
+         * MODEL, YEAR, SIZE, SPEED, MAXWEIGHT, FANS
          * */
 
         /*BufferedReader reader = null;
@@ -42,11 +41,11 @@ public class PropellerCollection implements Serializable {
         }catch(FileNotFoundException e) {
             System.out.printf("Файла с  именем  %s не существует. \n", fileName);
         }*/
-
         String fileName = System.getenv("whereArePropellers");
         String line = "";
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)))) {
             line = reader.readLine(); // skip the header
+            propellerMap.clear();
             while (true) {
                 line = reader.readLine();
                 if (line != null) {
@@ -56,9 +55,9 @@ public class PropellerCollection implements Serializable {
 
                     propeller.setModel(parameters.get(0));
                     propeller.setYear(Integer.parseInt(parameters.get(1)));
-                    propeller.setEfficiency(Integer.parseInt(parameters.get(2)));
-                    propeller.setSpeed(Double.parseDouble(parameters.get(3)));
-                    propeller.setMaxWeight(Double.parseDouble(parameters.get(4)));
+                    propeller.setSize(Integer.parseInt(parameters.get(2)));
+                    propeller.setSpeed(Integer.parseInt(parameters.get(3)));
+                    propeller.setMaxWeight(Integer.parseInt(parameters.get(4)));
                     propeller.setColor(parameters.get(5));
                     propeller.setFans(new ArrayList<>());
                     ArrayList<String> fan = LameCSVParser.parseItPlease(parameters.get(6));
@@ -113,7 +112,7 @@ public class PropellerCollection implements Serializable {
         String separator = ",";
         char quote = '"';
         String newLine = "\n";
-        String header = "MODEL,YEAR,EFFICIENCY,SPEED,MAX_WEIGHT,COLOR,FANS";
+        String header = "MODEL,YEAR,SIZE,SPEED,MAX_WEIGHT,COLOR,FANS";
         try {
             BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(fileName));
             boolean hasSpace = false;
@@ -141,8 +140,8 @@ public class PropellerCollection implements Serializable {
                 // put year
                 output.write((propellerMap.get(key).getYear() + separator).getBytes());
 
-                // put efficiency
-                output.write((propellerMap.get(key).getEfficiency() + separator).getBytes());
+                // put size
+                output.write((propellerMap.get(key).getSize() + separator).getBytes());
 
                 // put speed
                 output.write((propellerMap.get(key).getSpeed() + separator).getBytes());
@@ -203,6 +202,7 @@ public class PropellerCollection implements Serializable {
             e.printStackTrace();
             result = "";
         }
+        save();
         return result;
     }
 
@@ -236,6 +236,7 @@ public class PropellerCollection implements Serializable {
         else niceEnd2 = "а";
         System.out.printf("Удал%s %d пропеллер%s. \n", niceEnd1, tmp.size(), niceEnd2);*/
         result = tmp + " pripeller(s) has(ve) been removed";
+        save();
         return result;
     }
 
@@ -262,6 +263,7 @@ public class PropellerCollection implements Serializable {
             propellerMap.put(propeller.getModel(), propeller);
             result = "Propeller " + propeller.getModel() + " has been added";
         }
+        save();
         return result;
     }
 
@@ -272,6 +274,7 @@ public class PropellerCollection implements Serializable {
         if (propellerMap.keySet().stream().noneMatch(a -> a.compareTo(propeller.getModel()) == 0)) {
             propellerMap.put(propeller.getModel(), propeller);
             result = "Propeller " + propeller.getModel() + " has been added";
+            save();
         }
         else result = "We already have propeller " + propeller.getModel() + "\n Send another one";
         return result;

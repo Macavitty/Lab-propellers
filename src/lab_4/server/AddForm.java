@@ -25,7 +25,7 @@ public class AddForm extends JFrame {
 
     private JTextField model = new JTextField(),
             fans = new JTextField(),
-            efficiancy = new JTextField(),
+            size = new JTextField(),
             speed = new JTextField(),
             maxWeight = new JTextField();
 
@@ -35,12 +35,12 @@ public class AddForm extends JFrame {
             speedL = new JLabel("Speed: "),
             yearL = new JLabel("Year: "),
             maxWL = new JLabel("Max weight: "),
-            efficiencyL = new JLabel("Efficiency: ");
+            sizeL = new JLabel("Size: ");
 
     private JSpinner year;
     private JComboBox<String> color;
 
-    private JSlider efficiencySlider = new JSlider(),
+    private JSlider sizeSlider = new JSlider(),
             speedSlider = new JSlider(),
             maxWeightSlider = new JSlider();
 
@@ -65,15 +65,14 @@ public class AddForm extends JFrame {
         mainPanel = new JPanel();
 
         organizeModel();
-        setSlider(efficiancy, efficiencySlider, 0, 100);
+        setSlider(size, sizeSlider, 1, 482);
         setSlider(speed, speedSlider, 0, 600);
         setSlider(maxWeight, maxWeightSlider, 1, 300);
         setSpinners();
 
         // color
-        String[] colors = {"red", "white", "black",
-                "grey", "green", "blue", "silver",
-                "purple", "corral", "maroon", "yellow", "orange"};
+        String[] colors = {"red", "white", "black", "green", "blue", "silver",
+                "purple", "maroon", "golden", "orange"};
         // TODO change background
         color = new JComboBox<>(colors);
 
@@ -93,21 +92,12 @@ public class AddForm extends JFrame {
         final int currentYear = calendar.get(Calendar.YEAR);
         year = new JSpinner(new SpinnerNumberModel(currentYear, currentYear - 300, currentYear, 1));
         year.setEditor(new JSpinner.NumberEditor(year, "#"));
-        year.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent changeEvent) {
-                if (Integer.getInteger((String) year.getValue()) > currentYear
-                        || Integer.getInteger((String) year.getValue()) < currentYear - 300)
-                    year.setBackground(wrongInputColor);
-                else year.setBackground(correctInputColor);
-            }
-        });
     }
 
     private void setSlider(JTextField text, JSlider slider, int min, int max) {
         text.setEnabled(false);
         text.setHorizontalAlignment(JTextField.CENTER);
-        text.setText(Integer.toString(efficiencySlider.getValue()));
+        text.setText(Integer.toString(sizeSlider.getValue()));
         slider.setMaximum(max);
         slider.setMinimum(min);
         slider.addChangeListener(new ChangeListener() {
@@ -128,6 +118,7 @@ public class AddForm extends JFrame {
                 super.mouseClicked(e);
                 if (!model.getText().equals("")) {
                     String propeller = toJson();
+
                     if (condition) { // if add if max called
                         JOptionPane.showMessageDialog(thisWindow, collection.addIfMax(propeller), "ADDING", JOptionPane.PLAIN_MESSAGE);
                     } else { // if add called
@@ -158,8 +149,8 @@ public class AddForm extends JFrame {
                         + model.getText()
                         + "\",\"year\":"
                         + year.getValue()
-                        + ",\"efficiency\":"
-                        + efficiancy.getText()
+                        + ",\"size\":"
+                        + size.getText()
                         + ",\"speed\":"
                         + speed.getText()
                         + ",\"maxWeight\":"
@@ -196,7 +187,7 @@ public class AddForm extends JFrame {
                         .addComponent(yearL)
                         .addComponent(fansL)
                         .addComponent(colorL)
-                        .addComponent(efficiencyL)
+                        .addComponent(sizeL)
                         .addComponent(speedL)
                         .addComponent(maxWL))
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -204,11 +195,11 @@ public class AddForm extends JFrame {
                         .addComponent(year)
                         .addComponent(fans)
                         .addComponent(color)
-                        .addComponent(efficiencySlider)
+                        .addComponent(sizeSlider)
                         .addComponent(speedSlider)
                         .addComponent(maxWeightSlider))
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addComponent(efficiancy)
+                        .addComponent(size)
                         .addComponent(speed)
                         .addComponent(maxWeight)));
 
@@ -226,9 +217,9 @@ public class AddForm extends JFrame {
                         .addComponent(colorL)
                         .addComponent(color))
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                        .addComponent(efficiencyL)
-                        .addComponent(efficiencySlider)
-                        .addComponent(efficiancy))
+                        .addComponent(sizeL)
+                        .addComponent(sizeSlider)
+                        .addComponent(size))
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                         .addComponent(speedL)
                         .addComponent(speedSlider)
@@ -256,7 +247,7 @@ public class AddForm extends JFrame {
         buttonsPanel.setBackground(Color.decode("#E5DDDB"));
         modelL.setForeground(Color.decode("#400165"));
         speedL.setForeground(Color.decode("#400165"));
-        efficiencyL.setForeground(Color.decode("#400165"));
+        sizeL.setForeground(Color.decode("#400165"));
         colorL.setForeground(Color.decode("#400165"));
         yearL.setForeground(Color.decode("#400165"));
         maxWL.setForeground(Color.decode("#400165"));

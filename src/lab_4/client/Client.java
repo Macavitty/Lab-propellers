@@ -1,6 +1,7 @@
 package lab_4.client;
 
 import lab_4.PropellerCollection;
+import lab_4.story_components.Karlson;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,6 +11,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.channels.SocketChannel;
 import java.rmi.UnknownHostException;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Client {
@@ -21,7 +23,7 @@ public class Client {
 
         Scanner mainScanner = new Scanner(System.in);
 
-        PropellerCollection collection = new PropellerCollection();
+        Map<String, Karlson.Propeller> map;
 
         while (!Thread.currentThread().isInterrupted()) {
 
@@ -36,6 +38,11 @@ public class Client {
                 String userCommand;
 
                 System.out.println((String)ois.readObject());
+
+                // getting map
+                oos.writeObject("getMap");
+                map = (Map<String, Karlson.Propeller>)ois.readObject();
+                ClientWindow clientWindow = new ClientWindow(map);
 
                 while(!Thread.currentThread().isInterrupted()){
                     userCommand = mainScanner.nextLine();
