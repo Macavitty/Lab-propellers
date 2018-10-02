@@ -79,7 +79,7 @@ public class PropellerCollection implements Serializable {
             result = "collection hasn`t been loaded";
             e.printStackTrace();
             return result;
-        } catch (IndexOutOfBoundsException e){
+        } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
             return "Sorry, smth went wrong";
         }
@@ -102,12 +102,7 @@ public class PropellerCollection implements Serializable {
      */
     public String save() {
 
-        //+ propellerMap.keySet().stream().sorted();
-
-        // using BufferedOutputStream
         String fileName = System.getenv("savedPropellers");
-
-        //System.out.println("saving");
 
         String separator = ",";
         char quote = '"';
@@ -219,22 +214,6 @@ public class PropellerCollection implements Serializable {
 
         int tmp = 0;
         if (propellerMap.keySet().removeIf(a -> a.compareTo(greatKey) > 0)) tmp++;
-
-        /*Set<String> set = propellerMap.keySet();
-        Iterator<String> iterator = set.iterator();
-        List<String> tmp = new ArrayList<>();
-        while (iterator.hasNext()) {
-            String current = iterator.next();
-            if (current.compareTo(greatKey) > 0)
-                tmp.add(current);
-        }
-        tmp.forEach((key)-> propellerMap.remove(key));*/
-
-        /*String niceEnd1 = "ено", niceEnd2;
-        if (tmp.size()%10 == 1) { niceEnd2 = ""; niceEnd1 = "ён";}
-        else if (tmp.size()%10 > 4 || tmp.size()%10 == 0) niceEnd2 = "ов";
-        else niceEnd2 = "а";
-        System.out.printf("Удал%s %d пропеллер%s. \n", niceEnd1, tmp.size(), niceEnd2);*/
         result = tmp + " pripeller(s) has(ve) been removed";
         save();
         return result;
@@ -247,18 +226,9 @@ public class PropellerCollection implements Serializable {
      * Єлемент должен быть в формате json.
      */
     public String addIfMax(String s) {
-        //String fileName = System.getenv("from_json");
         Gson gson = new Gson();
 
         Karlson.Propeller propeller = gson.fromJson(s, Karlson.Propeller.class);
-        boolean isMax = true;
-
-        /*Set<String> set = propellerMap.keySet();
-        Iterator<String> iterator = set.iterator();
-        while (isMax && iterator.hasNext()) {
-            String current = iterator.next();
-            if (current.compareTo(propeller.getModel()) > 0) isMax = false;
-        }*/
         if (propellerMap.keySet().stream().max(String::compareTo).get().compareTo(propeller.getModel()) > 0) {
             propellerMap.put(propeller.getModel(), propeller);
             result = "Propeller " + propeller.getModel() + " has been added";
@@ -268,15 +238,13 @@ public class PropellerCollection implements Serializable {
     }
 
     public String add(String s) {
-        // String fileName = System.getenv("from_json");
         Gson gson = new Gson();
         Karlson.Propeller propeller = gson.fromJson(s, Karlson.Propeller.class);
         if (propellerMap.keySet().stream().noneMatch(a -> a.compareTo(propeller.getModel()) == 0)) {
             propellerMap.put(propeller.getModel(), propeller);
             result = "Propeller " + propeller.getModel() + " has been added";
             save();
-        }
-        else result = "We already have propeller " + propeller.getModel() + "\n Send another one";
+        } else result = "We already have propeller " + propeller.getModel() + "\n Send another one";
         return result;
     }
 
@@ -288,13 +256,6 @@ public class PropellerCollection implements Serializable {
         String fileName = System.getenv("to_json");
         try (BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(fileName))) {
             Gson gson = new GsonBuilder().create();
-           /* propellerMap.keySet().stream().forEach(key -> {
-                try {
-                    output.write(gson.toJson(propellerMap.get(model)).getBytes());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }); */
             output.write(gson.toJson(propellerMap.get(model)).getBytes());
             result = "Done";
         } catch (IOException e) {
@@ -303,7 +264,6 @@ public class PropellerCollection implements Serializable {
         }
         return result;
     }
-
 
     public String clear() {
         propellerMap.clear();
@@ -316,7 +276,7 @@ public class PropellerCollection implements Serializable {
         return result;
     }
 
-    public int getSize(){
+    public int getSize() {
         return propellerMap.size();
     }
 

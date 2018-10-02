@@ -55,25 +55,6 @@ public class CommandManager {
                     oos.writeObject(result);
                 } catch (NoSuchMethodException e) {
                     switch (command) {
-                        case "help":
-                        case "aaa":
-                            StringBuilder helper = new StringBuilder();
-                            helper.append("The command-line interface to the programme\n");
-                            helper.append("Type: \t");
-                            helper.append((char) 27 + "[35mload " + (char) 27 + "[30mto load the collection of propellers\n");
-                            helper.append("\t \t" + (char) 27 + "[35msave " + (char) 27 + "[30mto save the collection of propellers in csv file\n");
-                            helper.append("\t \t" + (char) 27 + "[35mtoJson " + (char) 27 + "[30mto save the collection of propellers in json file\n");
-                            helper.append("\t \t" + (char) 27 + "[35mclear " + (char) 27 + "[30mto clear the collection of propellers\n");
-                            helper.append("\t \t" + (char) 27 + "[35mtell_me " + (char) 27 + "[30mto see the story\n");
-                            helper.append("\t \t" + (char) 27 + "[35mremove {propeller_model} " + (char) 27 + "[30mto remove certain propeller\n");
-                            helper.append("\t \t" + (char) 27 + "[35mremoveGreaterKey {propeller_model} " + (char) 27 + "[30mto remove all propellers, who`s model`s names are after the specified one`s\n");
-                            helper.append("\t \t" + (char) 27 + "[35maddIfMax " + (char) 27 + "[30mto add propeller from json file if it`s size is maximal in the collection\n");
-
-                            oos.writeObject(helper);
-                            break;
-
-                        case "info":
-                            break;
 
                         case "tell_me":
                             if (propellerCollection.getPropellerMap().isEmpty())
@@ -81,9 +62,6 @@ public class CommandManager {
                             else try {
                                 story.tellStory(propellerCollection, oos);
                             } catch (Throwable t) {/**/}
-                            break;
-
-                        case "":
                             break;
 
                         case "getMap":

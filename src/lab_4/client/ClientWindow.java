@@ -302,7 +302,17 @@ public class ClientWindow extends JFrame {
 
     private class ImagePanel extends JPanel implements MouseMotionListener {
 
+        private Map<String, Karlson.Propeller> map;
+        private Map<String, Circle> circles = new HashMap<>();
+        private Map<String, Integer> xCoords = new HashMap<>();
+        private Map<String, Integer> yCoords = new HashMap<>();
 
+        ImagePanel(Map<String, Karlson.Propeller> map) {
+            this.map = map;
+            setPreferredSize(new Dimension(100, 100));
+            createCircles();
+            addMouseMotionListener(this);
+        }
         private class Circle extends Ellipse2D.Double {
             Color color;
             double size,
@@ -377,17 +387,6 @@ public class ClientWindow extends JFrame {
                 }
             });
         }
-
-        private Map<String, Karlson.Propeller> map;
-        private Map<String, Circle> circles = new HashMap<>();
-
-        ImagePanel(Map<String, Karlson.Propeller> map) {
-            this.map = map;
-            setPreferredSize(new Dimension(100, 100));
-            createCircles();
-            addMouseMotionListener(this);
-        }
-
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -427,11 +426,12 @@ public class ClientWindow extends JFrame {
                 String model = propeller.getModel();
                 Color color = parseColor(propeller.getColor());
                 int size = propeller.getSize() < 1 ? 1 : propeller.getSize() > 100 ? 100 : propeller.getSize();
-                Circle circle = new Circle(propeller.getSpeed(), propeller.getMaxWeight(), size,
-                        propeller.getYear(), color,
-                        (int) (Math.random() * F_WIDTH * 0.8),
-                        (int) (Math.random() * F_HEIGHT * 0.45));
+                int x = (int) (Math.random() * F_WIDTH * 0.8);
+                int y = (int) (Math.random() * F_HEIGHT * 0.45);
+                Circle circle = new Circle(propeller.getSpeed(), propeller.getMaxWeight(), size, propeller.getYear(), color, x, y);
                 circles.put(model, circle);
+                xCoords.put(model, x);
+                yCoords.put(model, y);
 
             }
         }

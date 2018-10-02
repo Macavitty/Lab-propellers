@@ -44,9 +44,7 @@ public class Server {
 
     private static class ClientHandler implements Runnable {
         private Socket client;
-        private String command;
         private PropellerCollection collection;
-        // private CommandManager commandManager = new CommandManager();
 
         private ClientHandler(Socket socket, PropellerCollection p) {
             this.client = socket;
@@ -58,7 +56,8 @@ public class Server {
                  ObjectInputStream ois = new ObjectInputStream(client.getInputStream())) {
 
                 oos.writeObject("Hi, enter your command please\n"
-                        + "Type " + (char) 27 + "[35mhelp / aaa " + (char) 27 + "[30mfor help or " + (char) 27 + "[35mq / Q " + (char) 27 + "[30mto quit");
+                        + "Type " + (char) 27 + "[35mhelp / aaa " + (char) 27 +
+                        "[30mfor help or " + (char) 27 + "[35mq / Q " + (char) 27 + "[30mto quit");
 
                 while (true) {
                     new CommandManager(oos, ois, collection);

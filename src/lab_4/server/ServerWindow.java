@@ -14,7 +14,7 @@ public class ServerWindow extends JFrame {
 
     private ServerWindow thisWindow = this;
 
-    private JPanel buttonsPanel, treePanel, loginPanel;
+    private JPanel buttonsPanel, treePanel;
     private JScrollPane treeScrollPane;
 
     private JButton removeGreaterKeyButton,
@@ -43,7 +43,7 @@ public class ServerWindow extends JFrame {
     public ServerWindow(PropellerCollection collection) {
         super("THIS IS SERVER");
         this.collection = collection;
-        setBounds(100, 10, 800, 500); // gthtvtyyst
+        setBounds(100, 10, 800, 500);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         createMenuBar();
@@ -295,7 +295,7 @@ public class ServerWindow extends JFrame {
 
     }
 
-    public void setLoggedIn(boolean b){
+    public void setLoggedIn(boolean b) {
         isLoggedIn = b;
     }
 }

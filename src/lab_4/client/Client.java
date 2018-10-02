@@ -1,14 +1,10 @@
 package lab_4.client;
 
-import lab_4.PropellerCollection;
 import lab_4.story_components.Karlson;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ConnectException;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.channels.SocketChannel;
 import java.rmi.UnknownHostException;
 import java.util.Map;
@@ -16,7 +12,7 @@ import java.util.Scanner;
 
 public class Client {
 
-    public  static void main(String []args) {
+    public static void main(String[] args) {
 
         String hostName = "localhost";
         int port = 4004;
@@ -37,14 +33,14 @@ public class Client {
                 ObjectOutputStream oos = new ObjectOutputStream(socketChannel.socket().getOutputStream());
                 String userCommand;
 
-                System.out.println((String)ois.readObject());
+                System.out.println((String) ois.readObject());
 
                 // getting map
                 oos.writeObject("getMap");
-                map = (Map<String, Karlson.Propeller>)ois.readObject();
+                map = (Map<String, Karlson.Propeller>) ois.readObject();
                 ClientWindow clientWindow = new ClientWindow(map);
 
-                while(!Thread.currentThread().isInterrupted()){
+                while (!Thread.currentThread().isInterrupted()) {
                     userCommand = mainScanner.nextLine();
                     if (userCommand.equals("q")) {
                         System.out.println("* Have a good day *");
@@ -54,27 +50,17 @@ public class Client {
 
                     System.out.println(ois.readObject());
 
- /*                   Object obj = ois.readObject();
-                    if(obj instanceof Map) {
-                        Map<String, Object> dataMap = (Map<String, Object>) obj;
-                        System.out.println(dataMap.toString());
-                    } else {
-                        System.out.println(ois.readObject());
-                        System.out.println(obj);
-                    }*/
-
                     oos.flush();
-
-                    //parseCommand(userCommand);
                 }
 
-            } catch (UnknownHostException e) { System.out.println("* smth fishy about host " + hostName + " *");
-            }catch (Exception e){
+            } catch (UnknownHostException e) {
+                System.out.println("* smth fishy about host " + hostName + " *");
+            } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("* cannot connect to " + hostName + " *");
-                try{
+                try {
                     Thread.sleep(2000);
-                }catch(InterruptedException ie) {
+                } catch (InterruptedException ie) {
                     System.out.println("* interrupted *");
                 }
             }
