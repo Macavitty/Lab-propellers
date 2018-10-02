@@ -27,12 +27,11 @@ public class ClientWindow extends JFrame {
 
     private JLabel filterTitleL = new JLabel("FILTERS"),
             objectsTitleL = new JLabel("PROPELLERS"),
-            chooseColorL = new JLabel("Choose colorBox:"),
-            chooseSizeL = new JLabel("Choose sizeField:"),
-            chooseModelL = new JLabel("Choose modelField:"),
-            chooseSpeedL = new JLabel("Choose speedField:"),
+            chooseColorL = new JLabel("Choose color:"),
+            chooseSizeL = new JLabel("Choose size:"),
+            chooseSpeedL = new JLabel("Choose speed:"),
             chooseMaxWL = new JLabel("Choose max weight:"),
-            chooseYearL = new JLabel("Choose yearSpinner:");
+            chooseYearL = new JLabel("Choose year:");
 
     private JTextField modelField = new JTextField(),
             sizeField = new JTextField(),
@@ -59,15 +58,16 @@ public class ClientWindow extends JFrame {
             cOrange = Color.decode("#e65c00"),
             cDefault = Color.decode("#003333");
 
+    private final int F_WIDTH = 750, F_HEIGHT = 800;
+
     ClientWindow(Map<String, Karlson.Propeller> map) {
 
         super("CLIENT");
         this.map = map;
 
-        final int WIDTH = 750, HEIGHT = 800;
-        setBounds(10, 10, WIDTH, HEIGHT);
-        setSize(WIDTH, HEIGHT);
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        setBounds(10, 10, F_WIDTH, F_HEIGHT);
+        setSize(F_WIDTH, F_HEIGHT);
+        setPreferredSize(new Dimension(F_WIDTH, F_HEIGHT));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
@@ -83,7 +83,7 @@ public class ClientWindow extends JFrame {
 
 
         JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        sp.setResizeWeight(0.7);
+        sp.setResizeWeight(0.4);
         sp.setEnabled(false);
         sp.setDividerSize(0);
         sp.add(filtersPanel);
@@ -95,7 +95,7 @@ public class ClientWindow extends JFrame {
         //anotherPanel.add(controlPanel);
 
         sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        sp.setResizeWeight(0.95);
+        sp.setResizeWeight(0.9);
         sp.setEnabled(false);
         sp.setDividerSize(0);
 
@@ -104,14 +104,10 @@ public class ClientWindow extends JFrame {
         add(sp);
 
         //setContentPane(contentPanel);
-        letsDraw();
         setColors();
         setVisible(true);
     }
 
-    private void letsDraw() {
-
-    }
 
     private void createControlPanel() {
         Border border = BorderFactory.createLineBorder(Color.decode("#8c8773"));
@@ -134,6 +130,7 @@ public class ClientWindow extends JFrame {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
                 super.mouseClicked(mouseEvent);
+                imagePanel.stopAnimation();
 
             }
         });
@@ -179,7 +176,7 @@ public class ClientWindow extends JFrame {
 
         //filtersPanel.setSize(200, 200);
         setSlider(maxWeightField, maxWeightSlider, 10, 30);
-        setSlider(sizeField, sizeSlider, 40, 100);
+        setSlider(sizeField, sizeSlider, 0, 100);
         setSlider(speedField, speedSlider, 10, 200);
 
         // 1 row
@@ -214,8 +211,6 @@ public class ClientWindow extends JFrame {
         three.add(speedField);
 
         // 5 row
-        two.add(chooseModelL);
-        two.add(modelField);
 
         // 6 row
         two.add(chooseYearL);
@@ -259,7 +254,6 @@ public class ClientWindow extends JFrame {
         objectsTitleL.setForeground(Color.decode("#8c8773"));
         chooseColorL.setForeground(filtersLabelColor);
         chooseSizeL.setForeground(filtersLabelColor);
-        chooseModelL.setForeground(filtersLabelColor);
         chooseSpeedL.setForeground(filtersLabelColor);
         chooseMaxWL.setForeground(filtersLabelColor);
         chooseYearL.setForeground(filtersLabelColor);
@@ -270,14 +264,15 @@ public class ClientWindow extends JFrame {
         text.setEnabled(false);
         text.setHorizontalAlignment(JTextField.CENTER);
         text.setText(Integer.toString(sizeSlider.getValue()));
-        slider.setMaximum(max);
-        slider.setMinimum(min);
         slider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent changeEvent) {
                 text.setText(Integer.toString(slider.getValue()));
             }
         });
+        slider.setMaximum(max);
+        slider.setMinimum(min);
+        slider.setValue((max + min) / 2);
     }
 
     private Color parseColor(String name) {
@@ -311,26 +306,35 @@ public class ClientWindow extends JFrame {
         private class Circle extends Ellipse2D.Double {
             Color color;
             double size,
-                    verginSize,
+                    virginSize,
                     speed,
                     maxWeight,
                     year;
-            Map<String, Karlson.Propeller> map;
             private long startTime = -1;
             private long shrinkDuration = 5000;
             private long normalizeDuration = 4000;
             private double shrinkStep, normalizeStep;
 
-            Circle(int speed, int maxWeight, int size, int year, Color color, int x, int y) {
+            Circle(int speed, int maxWeight, double size, int year, Color color, int x, int y) {
                 this.speed = speed;
                 this.maxWeight = maxWeight;
                 this.color = color;
                 this.size = size;
-                this.verginSize = size;
+                this.virginSize = size;
                 this.year = year;
                 setFrame(x, y, size, size);
-                shrinkStep = (verginSize - verginSize / 3) / 500;
-                normalizeStep = (verginSize - verginSize / 3) / 400;
+                shrinkStep = (virginSize - virginSize / 3) / 500;
+                normalizeStep = (virginSize - virginSize / 3) / 400;
+            }
+
+            void setSize(double newSize) {
+                this.size = (int) newSize;
+                this.virginSize = (int) newSize;
+                setFrame(x, y, size, size);
+                shrinkStep = (virginSize - virginSize / 3) / 500;
+                normalizeStep = (virginSize - virginSize / 3) / 400;
+                sizeSlider.setValue((int) newSize);
+                imagePanel.repaint();
             }
 
             Timer normalizeTimer = new Timer(4, new ActionListener() {
@@ -341,10 +345,10 @@ public class ClientWindow extends JFrame {
                     }
                     long now = System.currentTimeMillis();
                     long clockTime = now - startTime;
-                    if (clockTime >= normalizeDuration || size >= verginSize) {
+                    if (clockTime >= normalizeDuration || size >= virginSize) {
                         // for sure
-                        size = verginSize;
-                        setFrame(x, y, verginSize, verginSize);
+                        size = virginSize;
+                        setFrame(x, y, virginSize, virginSize);
                         normalizeTimer.stop();
                     } else {
                         size += normalizeStep;
@@ -361,7 +365,7 @@ public class ClientWindow extends JFrame {
                     }
                     long now = System.currentTimeMillis();
                     long clockTime = now - startTime;
-                    if (clockTime >= shrinkDuration || size <= verginSize / 3) {
+                    if (clockTime >= shrinkDuration || size <= virginSize / 3) {
                         shrinkTimer.stop();
                         startTime = -1;
                         normalizeTimer.start();
@@ -422,8 +426,11 @@ public class ClientWindow extends JFrame {
                 Karlson.Propeller propeller = map.get(entry.getKey());
                 String model = propeller.getModel();
                 Color color = parseColor(propeller.getColor());
-                int size = propeller.getSize() < 40 ? 40 : propeller.getSize() > 100 ? 100 : propeller.getSize();
-                Circle circle = new Circle(propeller.getSpeed(), propeller.getMaxWeight(), size, propeller.getYear(), color, (int) (Math.random() * 300), (int) (Math.random() * 400));
+                int size = propeller.getSize() < 1 ? 1 : propeller.getSize() > 100 ? 100 : propeller.getSize();
+                Circle circle = new Circle(propeller.getSpeed(), propeller.getMaxWeight(), size,
+                        propeller.getYear(), color,
+                        (int) (Math.random() * F_WIDTH * 0.8),
+                        (int) (Math.random() * F_HEIGHT * 0.45));
                 circles.put(model, circle);
 
             }
@@ -433,8 +440,6 @@ public class ClientWindow extends JFrame {
 
             for (Map.Entry<String, Circle> entry : circles.entrySet()) {
                 Circle c = entry.getValue();
-                System.out.println(
-                        sizeSlider.getValue() + " " + entry.getValue().size + " " + entry.getValue().verginSize);
                 if (sizeSlider.getValue() == c.size &&
                         parseColor((String) colorBox.getSelectedItem()).equals(c.color) &&
                         speedSlider.getValue() == c.speed &&
@@ -446,10 +451,22 @@ public class ClientWindow extends JFrame {
                     }
                 }
             }
+        }
 
-            /*
-             */
-            //System.out.println(parseColor( (String)colorBox.getSelectedItem()) + " " + c.colorBox);
+        void stopAnimation() {
+            for (Map.Entry<String, Circle> entry : circles.entrySet()) {
+                Circle c = entry.getValue();
+                if (c.shrinkTimer.isRunning()) {
+                    c.shrinkTimer.stop();
+                    c.setSize(c.size);
+                } else if (c.normalizeTimer.isRunning()) {
+                    c.normalizeTimer.stop();
+                    c.setSize(c.size);
+                }
+            }
+
         }
     }
 }
+
+
