@@ -255,5 +255,3 @@ public class AddForm extends JFrame {
 
     }
 }
-
-

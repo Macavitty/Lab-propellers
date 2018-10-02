@@ -57,7 +57,6 @@ public class Client {
  /*                   Object obj = ois.readObject();
                     if(obj instanceof Map) {
                         Map<String, Object> dataMap = (Map<String, Object>) obj;
-
                         System.out.println(dataMap.toString());
                     } else {
                         System.out.println(ois.readObject());

@@ -268,7 +268,7 @@ public class PropellerCollection implements Serializable {
     }
 
     public String add(String s) {
-       // String fileName = System.getenv("from_json");
+        // String fileName = System.getenv("from_json");
         Gson gson = new Gson();
         Karlson.Propeller propeller = gson.fromJson(s, Karlson.Propeller.class);
         if (propellerMap.keySet().stream().noneMatch(a -> a.compareTo(propeller.getModel()) == 0)) {
@@ -322,5 +322,3 @@ public class PropellerCollection implements Serializable {
 
 
 }
-
-
