@@ -1,6 +1,7 @@
 package lab_4.server;
 
 import lab_4.PropellerCollection;
+import lab_4.orm.DBManager;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -17,14 +18,17 @@ import java.util.concurrent.Executors;
 public class Server {
 
     static int port = 4004;
+    static DBManager dbManager;
 
     static ExecutorService executor = Executors.newFixedThreadPool(4);
 
     public static void main(String[] args) {
         PropellerCollection collection = new PropellerCollection();
         collection.load();
+        dbManager = new DBManager(collection);
+        dbManager.initDB();
         ServerWindow window = new ServerWindow(collection);
-        Runtime.getRuntime().addShutdownHook(new Thread(collection::save));
+        Runtime.getRuntime().addShutdownHook(new Thread(collection.save(System.getenv("whereArePropellers"))));
 
         try {
             ServerSocket ss = new ServerSocket(port);
@@ -60,7 +64,7 @@ public class Server {
                         "[30mfor help or " + (char) 27 + "[35mq / Q " + (char) 27 + "[30mto quit");
 
                 while (true) {
-                    new CommandManager(oos, ois, collection);
+                    new CommandManager(oos, ois, collection, dbManager);
                     break;
                 }
             } catch (IOException e) {

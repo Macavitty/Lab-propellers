@@ -41,15 +41,18 @@ public class Client {
                 ClientWindow clientWindow = new ClientWindow(map);
 
                 while (!Thread.currentThread().isInterrupted()) {
-                    userCommand = mainScanner.nextLine();
+                    /*userCommand = mainScanner.nextLine();
                     if (userCommand.equals("q")) {
                         System.out.println("* Have a good day *");
                         System.exit(0);
+                    }*/
+                    oos.writeObject("getMap"); // send command to server
+                    Map<String, Karlson.Propeller> got = (Map<String, Karlson.Propeller>) ois.readObject();
+                    if (!got.equals(map)) {
+                        map = got;
+                        clientWindow.refreshMap(map);
+                        System.out.println("refresh" + map.toString());
                     }
-                    oos.writeObject(userCommand); // send command to server
-
-                    System.out.println(ois.readObject());
-
                     oos.flush();
                 }
 

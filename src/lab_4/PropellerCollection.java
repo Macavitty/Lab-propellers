@@ -51,21 +51,9 @@ public class PropellerCollection implements Serializable {
                 if (line != null) {
                     List<String> parameters = LameCSVParser.parseItPlease(line);
 
-                    Karlson.Propeller propeller = new Karlson.Propeller();
-
-                    propeller.setModel(parameters.get(0));
-                    propeller.setYear(Integer.parseInt(parameters.get(1)));
-                    propeller.setSize(Integer.parseInt(parameters.get(2)));
-                    propeller.setSpeed(Integer.parseInt(parameters.get(3)));
-                    propeller.setMaxWeight(Integer.parseInt(parameters.get(4)));
-                    propeller.setColor(parameters.get(5));
-                    propeller.setFans(new ArrayList<>());
-                    ArrayList<String> fan = LameCSVParser.parseItPlease(parameters.get(6));
-                    for (String s : fan) {
-                        propeller.getFans().add(s);
-                    }
-                    propellerMap.put(parameters.get(0), propeller); // remove at the end
-                    save();
+                    Karlson.Propeller propeller = getPropeller(parameters);
+                    propellerMap.put(propeller.getModel(), propeller); // remove at the end
+                    save(System.getenv("savedPropellers"));
                 } else break;
             }
             result = "Loaded";
@@ -83,7 +71,53 @@ public class PropellerCollection implements Serializable {
             e.printStackTrace();
             return "Sorry, smth went wrong";
         }
+    }
 
+    public Map<String, Karlson.Propeller> loadMapFromFile(){
+        String fileName = System.getenv("whereArePropellers");
+        String line = "";
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)))) {
+            line = reader.readLine(); // skip the header
+            propellerMap.clear();
+            while (true) {
+                line = reader.readLine();
+                if (line != null) {
+                    List<String> parameters = LameCSVParser.parseItPlease(line);
+
+                    Karlson.Propeller propeller = getPropeller(parameters);
+                    propellerMap.put(propeller.getModel(), propeller); // remove at the end
+                    save(System.getenv("savedPropellers"));
+                } else break;
+            }
+            return propellerMap;
+
+        } catch (FileNotFoundException e) {
+            System.err.printf("File %s doesn`t exists \n", fileName);
+            return null;
+        } catch (IOException e) {
+            result = "collection hasn`t been loaded";
+            e.printStackTrace();
+            return null;
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Karlson.Propeller getPropeller(List<String> parameters){
+        Karlson.Propeller propeller = new Karlson.Propeller();
+        propeller.setModel(parameters.get(0));
+        propeller.setYear(Integer.parseInt(parameters.get(1)));
+        propeller.setSize(Integer.parseInt(parameters.get(2)));
+        propeller.setSpeed(Integer.parseInt(parameters.get(3)));
+        propeller.setMaxWeight(Integer.parseInt(parameters.get(4)));
+        propeller.setColor(parameters.get(5));
+        propeller.setFans(new ArrayList<>());
+        ArrayList<String> fan = LameCSVParser.parseItPlease(parameters.get(6));
+        for (String s : fan) {
+            propeller.getFans().add(s);
+        }
+        return propeller;
     }
 
     public Map<String, Object> info() {
@@ -100,9 +134,9 @@ public class PropellerCollection implements Serializable {
     /**
      * Метод для сохранения коллекции в файл в формате csv.
      */
-    public String save() {
+    public String save(String fileName) {
 
-        String fileName = System.getenv("savedPropellers");
+        //String fileName = System.getenv("savedPropellers");
 
         String separator = ",";
         char quote = '"';
@@ -197,7 +231,7 @@ public class PropellerCollection implements Serializable {
             e.printStackTrace();
             result = "";
         }
-        save();
+        save(System.getenv("whereArePropellers"));
         return result;
     }
 
@@ -205,7 +239,7 @@ public class PropellerCollection implements Serializable {
     /**
      * Метод для удаления из коллекции
      * пропеллеров, название модели которых стоит
-     * ниже по алфовитному порядку от
+     * ниже по алфавитному порядку от
      * указанного во входной строке.
      *
      * @param greatKey модель для сравнения
@@ -215,7 +249,7 @@ public class PropellerCollection implements Serializable {
         int tmp = 0;
         if (propellerMap.keySet().removeIf(a -> a.compareTo(greatKey) > 0)) tmp++;
         result = tmp + " pripeller(s) has(ve) been removed";
-        save();
+        save(System.getenv("whereArePropellers"));
         return result;
     }
 
@@ -233,7 +267,7 @@ public class PropellerCollection implements Serializable {
             propellerMap.put(propeller.getModel(), propeller);
             result = "Propeller " + propeller.getModel() + " has been added";
         }
-        save();
+        save(System.getenv("whereArePropellers"));
         return result;
     }
 
@@ -243,7 +277,7 @@ public class PropellerCollection implements Serializable {
         if (propellerMap.keySet().stream().noneMatch(a -> a.compareTo(propeller.getModel()) == 0)) {
             propellerMap.put(propeller.getModel(), propeller);
             result = "Propeller " + propeller.getModel() + " has been added";
-            save();
+            save(System.getenv("whereArePropellers"));
         } else result = "We already have propeller " + propeller.getModel() + "\n Send another one";
         return result;
     }
@@ -268,6 +302,7 @@ public class PropellerCollection implements Serializable {
     public String clear() {
         propellerMap.clear();
         result = "Done: collection is empty";
+        save(System.getenv("whereArePropellers"));
         return result;
     }
 

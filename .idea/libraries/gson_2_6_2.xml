@@ -2,6 +2,7 @@
   <library name="gson-2.6.2">
     <CLASSES>
       <root url="jar://$USER_HOME$/Загрузки/gson-2.6.2.jar!/" />
+      <root url="jar://$USER_HOME$/postgresql-42.2.5.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

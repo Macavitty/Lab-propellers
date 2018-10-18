@@ -3,6 +3,8 @@ package lab_4.story_components;
 import lab_4.PropellerCollection;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 
@@ -43,9 +45,6 @@ public class Karlson extends Hero {
 
     public static class Propeller implements PrepareToFly, TryToFly, Comparable<Propeller>, Serializable {
 
-        /*
-    характеристику, определяющую местоположение объекта на плоскости/в пространстве;
-    */
         // parameters
         private String model; // имя, название или аналогичный текстовый идентификатор (unique)
         private int speed, //
@@ -54,8 +53,13 @@ public class Karlson extends Hero {
                 year; // время/дату рождения/создания объекта
         private ArrayList<String> fans;
         private String color;
+        transient SimpleDateFormat format = new SimpleDateFormat("SSS");
+        private Date date;
+        OffsetDateTime odt;
 
         public Propeller() {
+            this.date = new Date();
+            this.odt = OffsetDateTime.now();
         }
 
         public Propeller(String model, int speed, int maxWeight, int size, int year, ArrayList<String> fans) {
@@ -65,6 +69,8 @@ public class Karlson extends Hero {
             this.maxWeight = maxWeight;
             this.year = year;
             this.speed = speed;
+            this.date = new Date();
+            this.odt = OffsetDateTime.now();
         }
 
         public int getMaxWeight() {
@@ -121,6 +127,10 @@ public class Karlson extends Hero {
 
         public void setColor(String color) {
             this.color = color;
+        }
+
+        public Date getDate(){
+            return this.date;
         }
 
         @Override

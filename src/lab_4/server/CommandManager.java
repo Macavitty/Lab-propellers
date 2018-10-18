@@ -3,6 +3,7 @@ package lab_4.server;
 import com.google.gson.Gson;
 import lab_4.LameCSVParser;
 import lab_4.PropellerCollection;
+import lab_4.orm.DBManager;
 import lab_4.story_components.Story;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class CommandManager {
     private PropellerCollection propellerCollection;
     Story story = new Story();
 
-    public CommandManager(ObjectOutputStream oos, ObjectInputStream ois, PropellerCollection p) {
+    public CommandManager(ObjectOutputStream oos, ObjectInputStream ois, PropellerCollection p, DBManager db) {
         this.oos = oos;
         this.ois = ois;
         propellerCollection = p;
@@ -65,7 +66,7 @@ public class CommandManager {
                             break;
 
                         case "getMap":
-                            oos.writeObject(propellerCollection.getPropellerMap());
+                            oos.writeObject(db.getCollectionFromDB().getPropellerMap());
                             break;
 
                         default:

@@ -1,18 +1,25 @@
 package lab_4.client;
 
 
+import lab_4.PropellerCollection;
+import lab_4.orm.DBManager;
+
+import java.text.DateFormat;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
 import lab_4.story_components.Karlson;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ClientWindow extends JFrame {
 
@@ -44,8 +51,10 @@ public class ClientWindow extends JFrame {
     private JSlider sizeSlider = new JSlider(),
             speedSlider = new JSlider(),
             maxWeightSlider = new JSlider();
+    private JMenu mainMenu;
 
     private Map<String, Karlson.Propeller> map;
+    private DBManager dbManager;
 
     private Color cRed = Color.decode("#ff3333"),
             cSilver = Color.decode("#c2d6d6"),
@@ -60,9 +69,19 @@ public class ClientWindow extends JFrame {
 
     private final int F_WIDTH = 750, F_HEIGHT = 800;
 
+    private JMenuBar menuBar;
+    ResourceBundle resourceBundle;
+    final int COLOR_NUM = 9;
+    private String[] colors = {"white", "red", "black", "green", "blue", "silver",
+            "purple", "golden", "orange"};
+    private String createdString = "created";
+
     ClientWindow(Map<String, Karlson.Propeller> map) {
 
         super("CLIENT");
+        dbManager = new DBManager();
+        dbManager.initDB();
+        Locale.setDefault(new Locale("en"));
         this.map = map;
 
         setBounds(10, 10, F_WIDTH, F_HEIGHT);
@@ -81,38 +100,67 @@ public class ClientWindow extends JFrame {
         objectsPanel.add(objectsTitleL, BorderLayout.NORTH);
         objectsPanel.add(imagePanel, BorderLayout.CENTER);
 
-
-        JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        sp.setResizeWeight(0.4);
-        sp.setEnabled(false);
-        sp.setDividerSize(0);
-        sp.add(filtersPanel);
-        sp.add(controlPanel);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setResizeWeight(0.4);
+        splitPane.setEnabled(false);
+        splitPane.setDividerSize(0);
+        splitPane.add(filtersPanel);
+        splitPane.add(controlPanel);
         JPanel anotherPanel = new JPanel(new BorderLayout());
-        anotherPanel.add(sp, BorderLayout.CENTER);
+        anotherPanel.add(splitPane, BorderLayout.CENTER);
 
-        // anotherPanel.add(filtersPanel);
-        //anotherPanel.add(controlPanel);
+        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setResizeWeight(0.9);
+        splitPane.setEnabled(false);
+        splitPane.setDividerSize(0);
 
-        sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        sp.setResizeWeight(0.9);
-        sp.setEnabled(false);
-        sp.setDividerSize(0);
-
-        sp.add(objectsPanel);
-        sp.add(anotherPanel);
-        add(sp);
+        splitPane.add(objectsPanel);
+        splitPane.add(anotherPanel);
+        add(splitPane);
 
         //setContentPane(contentPanel);
+        createMenuBar();
+        setJMenuBar(menuBar);
         setColors();
         setVisible(true);
     }
 
+    private void createMenuBar() {
+        mainMenu = new JMenu("LANGUAGE");
+
+        JMenuItem menuItemRussian = new JMenuItem("Русский");
+        menuItemRussian.addActionListener((ActionEvent event) -> {
+            Locale locale = new Locale("ru", "RU");
+            changeLocale(locale);
+        });
+        JMenuItem menuItemDutch = new JMenuItem("Nederlands"); //
+        menuItemDutch.addActionListener((ActionEvent event) -> {
+            Locale locale = new Locale("nl", "NL");
+            changeLocale(locale);
+        });
+        JMenuItem menuItemLithuanian = new JMenuItem("Lietuviškai"); // Lt_LT
+        menuItemLithuanian.addActionListener((ActionEvent event) -> {
+            Locale locale = new Locale("lt", "LT");
+            changeLocale(locale);
+        });
+        JMenuItem menuItemSpanish = new JMenuItem("español"); // es_CO
+        menuItemSpanish.addActionListener((ActionEvent event) -> {
+            Locale locale = new Locale("es", "CO");
+            changeLocale(locale);
+        });
+
+        mainMenu.add(menuItemRussian);
+        mainMenu.add(menuItemDutch);
+        mainMenu.add(menuItemLithuanian);
+        mainMenu.add(menuItemSpanish);
+
+        menuBar = new JMenuBar();
+        menuBar.setBorderPainted(true);
+        menuBar.add(mainMenu);
+    }
 
     private void createControlPanel() {
         Border border = BorderFactory.createLineBorder(Color.decode("#8c8773"));
-        //controlPanel.setBorder(border);
-        //controlPanel.setSize(1000, 100);
 
         controlPanel.add(startButton, BorderLayout.CENTER);
         controlPanel.add(stopButton, BorderLayout.CENTER);
@@ -138,6 +186,7 @@ public class ClientWindow extends JFrame {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
                 super.mouseClicked(mouseEvent);
+
                 System.exit(0);
             }
         });
@@ -181,15 +230,14 @@ public class ClientWindow extends JFrame {
 
         // 1 row
         three.add(chooseColorL);
-        String[] colors = {"white", "red", "black", "green", "blue", "silver",
-                "purple", "golden", "orange"};
         colorBox = new JComboBox<>(colors);
         JTextField forColor = new JTextField();
         forColor.setEnabled(false);
         colorBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                forColor.setBackground(parseColor(colorBox.getSelectedItem().toString()));
+                if (colorBox.getSelectedItem() != null)
+                    forColor.setBackground(parseColor(colorBox.getSelectedItem().toString()));
             }
         });
         three.add(colorBox);
@@ -212,13 +260,13 @@ public class ClientWindow extends JFrame {
 
         // 5 row
 
-        // 6 row
         two.add(chooseYearL);
         // yearSpinner
         Calendar calendar = Calendar.getInstance();
         final int currentYear = calendar.get(Calendar.YEAR);
         yearSpinner = new JSpinner(new SpinnerNumberModel(currentYear, currentYear - 300, currentYear, 1));
         yearSpinner.setEditor(new JSpinner.NumberEditor(yearSpinner, "#"));
+        yearSpinner.setMaximumSize(new Dimension(50, 10));
         two.add(yearSpinner);
 
         three.setBackground(Color.decode("#bfff80"));
@@ -231,10 +279,8 @@ public class ClientWindow extends JFrame {
     private void createObjectsPanel() {
         Border border = BorderFactory.createLineBorder(Color.decode("#8c8773"));
         objectsPanel.setBorder(border);
-        //objectsPanel.setSize(100, 100);
 
     }
-
 
     private void setColors() {
         Color buttonColor = Color.decode("#400165");
@@ -276,28 +322,18 @@ public class ClientWindow extends JFrame {
     }
 
     private Color parseColor(String name) {
-        switch (name) {
-            case "red":
-                return cRed;
-            case "silver":
-                return cSilver;
-            case "black":
-                return cBlack;
-            case "blue":
-                return cBlue;
-            case "green":
-                return cGreen;
-            case "golden":
-                return cGolden;
-            case "white":
-                return cWhite;
-            case "purple":
-                return cPurple;
-            case "orange":
-                return cOrange;
-            default:
-                return cDefault;
-        }
+
+        if (name.equals(colors[1])) return cRed;
+        else if (name.equals(colors[5])) return cSilver;
+        else if (name.equals(colors[2])) return cBlack;
+        else if (name.equals(colors[4])) return cBlue;
+        else if (name.equals(colors[3])) return cGreen;
+        else if (name.equals(colors[7])) return cGolden;
+        else if (name.equals(colors[0])) return cWhite;
+        else if (name.equals(colors[6])) return cPurple;
+        else if (name.equals(colors[8])) return cOrange;
+        return cDefault;
+
     }
 
     private class ImagePanel extends JPanel implements MouseMotionListener {
@@ -313,6 +349,28 @@ public class ClientWindow extends JFrame {
             createCircles();
             addMouseMotionListener(this);
         }
+
+        public void doIt(Map<String, Karlson.Propeller> newMap) {
+            if (!map.equals(newMap)) {
+                for (Map.Entry<String, Karlson.Propeller> entry : newMap.entrySet()) {
+                    if (map.keySet().stream().anyMatch(a -> a.compareTo(entry.getKey()) == 0)) { // found new
+                        Karlson.Propeller propeller = map.get(entry.getKey());
+                        createCircle(propeller);
+                        map.put(entry.getKey(), propeller);
+                        repaint();
+                    }
+                }
+                for (Map.Entry<String, Karlson.Propeller> entry : map.entrySet()) {
+                    if (newMap.keySet().stream().anyMatch(a -> a.compareTo(entry.getKey()) == 0)) { // found removed
+                        removeCircle(entry.getKey());
+                        map.remove(entry.getKey());
+                        repaint();
+                    }
+
+                }
+            }
+        }
+
         private class Circle extends Ellipse2D.Double {
             Color color;
             double size,
@@ -324,14 +382,16 @@ public class ClientWindow extends JFrame {
             private long shrinkDuration = 5000;
             private long normalizeDuration = 4000;
             private double shrinkStep, normalizeStep;
+            Date date;
 
-            Circle(int speed, int maxWeight, double size, int year, Color color, int x, int y) {
+            Circle(int speed, int maxWeight, double size, int year, Color color, int x, int y, Date date) {
                 this.speed = speed;
                 this.maxWeight = maxWeight;
                 this.color = color;
                 this.size = size;
                 this.virginSize = size;
                 this.year = year;
+                this.date = date;
                 setFrame(x, y, size, size);
                 shrinkStep = (virginSize - virginSize / 3) / 500;
                 normalizeStep = (virginSize - virginSize / 3) / 400;
@@ -387,6 +447,19 @@ public class ClientWindow extends JFrame {
                 }
             });
         }
+
+        void addCircle(Karlson.Propeller p) {
+            createCircle(p);
+            repaint();
+        }
+
+        void removeCircle(String m) {
+            circles.remove(m);
+            xCoords.remove(m);
+            yCoords.remove(m);
+            repaint();
+        }
+
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -399,7 +472,6 @@ public class ClientWindow extends JFrame {
                 g2.fill(circle);
                 g2.setColor(Color.decode("#8c8773"));
                 g2.draw(circle);
-
             }
         }
 
@@ -409,10 +481,11 @@ public class ClientWindow extends JFrame {
 
         @Override
         public void mouseMoved(MouseEvent e) {
+            DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, Locale.getDefault());
             for (Map.Entry<String, Circle> entry : circles.entrySet()) {
 
                 if (circles.get(entry.getKey()).contains(e.getPoint())) {
-                    setToolTipText(entry.getKey());
+                    setToolTipText(entry.getKey() + ", " + createdString + ": " + df.format(new Date()));
                     repaint();
                 }
                 ToolTipManager.sharedInstance().mouseMoved(e);
@@ -423,17 +496,21 @@ public class ClientWindow extends JFrame {
         void createCircles() {
             for (Map.Entry<String, Karlson.Propeller> entry : map.entrySet()) {
                 Karlson.Propeller propeller = map.get(entry.getKey());
-                String model = propeller.getModel();
-                Color color = parseColor(propeller.getColor());
-                int size = propeller.getSize() < 1 ? 1 : propeller.getSize() > 100 ? 100 : propeller.getSize();
-                int x = (int) (Math.random() * F_WIDTH * 0.8);
-                int y = (int) (Math.random() * F_HEIGHT * 0.45);
-                Circle circle = new Circle(propeller.getSpeed(), propeller.getMaxWeight(), size, propeller.getYear(), color, x, y);
-                circles.put(model, circle);
-                xCoords.put(model, x);
-                yCoords.put(model, y);
+                createCircle(propeller);
 
             }
+        }
+
+        void createCircle(Karlson.Propeller propeller) {
+            String model = propeller.getModel();
+            Color color = parseColor(propeller.getColor());
+            int size = propeller.getSize() < 1 ? 1 : propeller.getSize() > 100 ? 100 : propeller.getSize();
+            int x = (int) (Math.random() * F_WIDTH * 0.8);
+            int y = (int) (Math.random() * F_HEIGHT * 0.45);
+            Circle circle = new Circle(propeller.getSpeed(), propeller.getMaxWeight(), size, propeller.getYear(), color, x, y, propeller.getDate());
+            circles.put(model, circle);
+            xCoords.put(model, x);
+            yCoords.put(model, y);
         }
 
         void resizeCircles() {
@@ -466,7 +543,41 @@ public class ClientWindow extends JFrame {
             }
 
         }
+
+    }
+
+    private void changeLocale(Locale newLocale) {
+        Locale.setDefault(newLocale);
+        resourceBundle = ResourceBundle.getBundle("locale", newLocale);
+        changeLang();
+    }
+
+    private void changeLocale(String newLocale) {
+        Locale locale = new Locale(newLocale);
+        changeLocale(locale);
+    }
+
+    public void refreshMap(Map<String, Karlson.Propeller> map) {
+        imagePanel.doIt(map);
+    }
+
+    private void changeLang() {
+        stopButton.setText(resourceBundle.getString("stopBtn"));
+        startButton.setText(resourceBundle.getString("startBtn"));
+        exitButton.setText(resourceBundle.getString("exitBtn"));
+        filterTitleL.setText(resourceBundle.getString("filterTitleL"));
+        objectsTitleL.setText(resourceBundle.getString("objectsTitleL"));
+        chooseColorL.setText(resourceBundle.getString("chooseColorL"));
+        chooseSizeL.setText(resourceBundle.getString("chooseSizeL"));
+        chooseSpeedL.setText(resourceBundle.getString("chooseSpeedL"));
+        chooseMaxWL.setText(resourceBundle.getString("chooseMaxWL"));
+        chooseYearL.setText(resourceBundle.getString("chooseYearL"));
+        mainMenu.setText(resourceBundle.getString("lang"));
+        colorBox.removeAllItems();
+        for (int i = 0; i < COLOR_NUM; i++) {
+            colors[i] = resourceBundle.getString(String.valueOf(i + 1));
+            colorBox.addItem(colors[i]);
+        }
+        createdString = resourceBundle.getString("created");
     }
 }
-
-
