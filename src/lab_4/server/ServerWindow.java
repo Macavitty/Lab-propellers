@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -243,7 +244,7 @@ class ServerWindow extends JFrame {
                     sizeTextField.setText(String.valueOf(p.getSize()));
                     speedSlider.setValue(p.getSpeed());
                     speedTextField.setText(String.valueOf(p.getSpeed()));
-                    maxWeightSlider.setValue(p.getMaxWeight());
+                    maxWeightSlider.setValue((int)(p.getMaxWeight()*100));
                     maxWeightTextField.setText(String.valueOf(p.getMaxWeight()));
                     colorBox.setSelectedItem(p.getColor());
                 } else {
@@ -281,9 +282,22 @@ class ServerWindow extends JFrame {
         editFiltPanel.setBorder(border);
         editFiltPanel.setBackground(Color.decode("#FBCA96"));
         organizeModel();
-        setSlider(sizeTextField, sizeSlider, 1, 482);
-        setSlider(speedTextField, speedSlider, 0, 600);
-        setSlider(maxWeightTextField, maxWeightSlider, 1, 300);
+        setSlider(sizeTextField, sizeSlider, 1, 100);
+        setSlider(speedTextField, speedSlider, 10, 200);
+        // double slider
+        maxWeightSlider = new JSlider(0, 100, 1);
+        setSlider(maxWeightTextField, maxWeightSlider, 0, 100);
+        maxWeightSlider.setMajorTickSpacing(25);
+        maxWeightSlider.setPaintTicks(true);
+        Hashtable<Integer,JLabel> labelTable = new java.util.Hashtable<>();
+        labelTable.put(100, new JLabel("1.0"));
+        labelTable.put(75, new JLabel("0.75"));
+        labelTable.put(50, new JLabel("0.50"));
+        labelTable.put(25, new JLabel("0.25"));
+        labelTable.put(0, new JLabel("0.0"));
+        maxWeightSlider.setLabelTable( labelTable );
+        //maxWeightSlider.setPaintLabels(true);
+
         setSpinners();
         // colorBox
         String[] colors = {"red", "white", "black", "green", "blue", "silver",
@@ -325,18 +339,20 @@ class ServerWindow extends JFrame {
         text.setMaximumSize(new Dimension(60, 19));
         text.setMinimumSize(new Dimension(60, 19));
         text.setHorizontalAlignment(JTextField.CENTER);
-        text.setText(Integer.toString(sizeSlider.getValue()));
-        slider.setMaximum(max);
-        slider.setMinimum(min);
+        if (slider.equals(maxWeightSlider)) text.setText(Double.toString(sizeSlider.getValue()/100D));
         slider.setMaximumSize(fieldsDimention);
         slider.setBackground(Color.decode("#FBCA96"));
         slider.setForeground(Color.decode("#400165"));
         slider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent changeEvent) {
-                text.setText(Integer.toString(slider.getValue()));
+                if (slider.equals(maxWeightSlider)) text.setText(Double.toString(slider.getValue()/100.0));
+                else text.setText(Integer.toString(slider.getValue()));
             }
         });
+        slider.setMaximum(max);
+        slider.setMinimum(min);
+        slider.setValue((max + min) / 2);
     }
 
     private void createButtonsPanel() {

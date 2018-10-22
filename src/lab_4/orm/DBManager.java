@@ -51,7 +51,7 @@ public class DBManager {
             PreparedStatement s = conn.prepareStatement(insert);
             s.setString(1, p.getModel());
             s.setInt(2, p.getSize());
-            s.setInt(3, p.getMaxWeight());
+            s.setDouble(3, p.getMaxWeight());
             s.setInt(4, p.getSpeed());
             s.setInt(5, p.getYear());
             s.setString(6, p.getColor());
@@ -146,7 +146,7 @@ DROP TABLE propellers;
 CREATE TABLE propellers (
 	model text PRIMARY KEY,
 	size integer,
-	max integer,
+	max numeric,
 	speed integer,
 	year integer,
 	color text,

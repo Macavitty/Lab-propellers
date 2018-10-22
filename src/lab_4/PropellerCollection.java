@@ -110,7 +110,7 @@ public class PropellerCollection implements Serializable {
         propeller.setYear(Integer.parseInt(parameters.get(1)));
         propeller.setSize(Integer.parseInt(parameters.get(2)));
         propeller.setSpeed(Integer.parseInt(parameters.get(3)));
-        propeller.setMaxWeight(Integer.parseInt(parameters.get(4)));
+        propeller.setMaxWeight(Double.parseDouble(parameters.get(4)));
         propeller.setColor(parameters.get(5));
         propeller.setFans(new ArrayList<>());
         ArrayList<String> fan = LameCSVParser.parseItPlease(parameters.get(6));

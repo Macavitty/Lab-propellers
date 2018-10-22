@@ -48,9 +48,9 @@ public class Karlson extends Hero {
         // parameters
         private String model; // имя, название или аналогичный текстовый идентификатор (unique)
         private int speed, //
-                maxWeight, // грузоподъёмность
                 size, // размер или аналогичный числовой параметр
                 year; // время/дату рождения/создания объекта
+        double maxWeight; // грузоподъёмность
         private ArrayList<String> fans;
         private String color;
         transient SimpleDateFormat format = new SimpleDateFormat("SSS");
@@ -62,7 +62,7 @@ public class Karlson extends Hero {
             this.odt = OffsetDateTime.now();
         }
 
-        public Propeller(String model, int speed, int maxWeight, int size, int year, ArrayList<String> fans) {
+        public Propeller(String model, int speed, double maxWeight, int size, int year, ArrayList<String> fans) {
             this.fans = fans;
             this.model = model;
             this.size = size;
@@ -73,7 +73,7 @@ public class Karlson extends Hero {
             this.odt = OffsetDateTime.now();
         }
 
-        public int getMaxWeight() {
+        public double getMaxWeight() {
             return maxWeight;
         }
 
@@ -109,7 +109,7 @@ public class Karlson extends Hero {
             this.speed = speed;
         }
 
-        public void setMaxWeight(int maxWeight) {
+        public void setMaxWeight(double maxWeight) {
             this.maxWeight = maxWeight;
         }
 

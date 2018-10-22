@@ -5,6 +5,8 @@ import lab_4.PropellerCollection;
 import lab_4.orm.DBManager;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -75,6 +77,7 @@ public class ClientWindow extends JFrame {
     private String[] colors = {"white", "red", "black", "green", "blue", "silver",
             "purple", "golden", "orange"};
     private String createdString = "created";
+    private String maxTipStr = "max weight";
 
     ClientWindow(Map<String, Karlson.Propeller> map) {
 
@@ -224,10 +227,21 @@ public class ClientWindow extends JFrame {
         filtersPanel.setBorder(border);
 
         //filtersPanel.setSize(200, 200);
-        setSlider(maxWeightField, maxWeightSlider, 10, 30);
-        setSlider(sizeField, sizeSlider, 0, 100);
+        setSlider(sizeField, sizeSlider, 1, 100);
         setSlider(speedField, speedSlider, 10, 200);
-
+        // double slider
+        maxWeightSlider = new JSlider(0, 100, 1);
+        setSlider(maxWeightField, maxWeightSlider, 0, 100);
+        maxWeightSlider.setMajorTickSpacing(25);
+        maxWeightSlider.setPaintTicks(true);
+        Hashtable<Integer, JLabel> labelTable = new java.util.Hashtable<>();
+        labelTable.put(100, new JLabel("1.0"));
+        labelTable.put(75, new JLabel("0.75"));
+        labelTable.put(50, new JLabel("0.50"));
+        labelTable.put(25, new JLabel("0.25"));
+        labelTable.put(0, new JLabel("0.0"));
+        maxWeightSlider.setLabelTable(labelTable);
+        //maxWeightSlider.setPaintLabels(true);
         // 1 row
         three.add(chooseColorL);
         colorBox = new JComboBox<>(colors);
@@ -309,11 +323,13 @@ public class ClientWindow extends JFrame {
     private void setSlider(JTextField text, JSlider slider, int min, int max) {
         text.setEnabled(false);
         text.setHorizontalAlignment(JTextField.CENTER);
-        text.setText(Integer.toString(sizeSlider.getValue()));
+        if (slider.equals(maxWeightSlider)) text.setText(Double.toString(slider.getValue() / 100.0));
+        else text.setText(Integer.toString(slider.getValue()));
         slider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent changeEvent) {
-                text.setText(Integer.toString(slider.getValue()));
+                if (slider.equals(maxWeightSlider)) text.setText(Double.toString(slider.getValue() / 100.0));
+                else text.setText(Integer.toString(slider.getValue()));
             }
         });
         slider.setMaximum(max);
@@ -384,7 +400,7 @@ public class ClientWindow extends JFrame {
             private double shrinkStep, normalizeStep;
             Date date;
 
-            Circle(int speed, int maxWeight, double size, int year, Color color, int x, int y, Date date) {
+            Circle(int speed, double maxWeight, double size, int year, Color color, int x, int y, Date date) {
                 this.speed = speed;
                 this.maxWeight = maxWeight;
                 this.color = color;
@@ -481,16 +497,24 @@ public class ClientWindow extends JFrame {
 
         @Override
         public void mouseMoved(MouseEvent e) {
-            DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, Locale.getDefault());
+            DateFormat datef = DateFormat.getDateInstance(DateFormat.LONG, Locale.getDefault());
+            DecimalFormat decformat = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
+            String sep = String.valueOf(decformat.getDecimalFormatSymbols().getDecimalSeparator());
             for (Map.Entry<String, Circle> entry : circles.entrySet()) {
 
                 if (circles.get(entry.getKey()).contains(e.getPoint())) {
-                    setToolTipText(entry.getKey() + ", " + createdString + ": " + df.format(new Date()));
+                    setToolTipText(entry.getKey() + "; " +
+                            createdString + ": " + datef.format(circles.get(entry.getKey()).date) + ", " +
+                            maxTipStr + ": " +
+                            Double.toString(circles.get(entry.getKey()).maxWeight).replace(".", sep).replace(",", sep));
                     repaint();
                 }
                 ToolTipManager.sharedInstance().mouseMoved(e);
 
             }
+            /*
+            * comma separator:
+            * Вся Европа, кроме Великобритании и Ирландии, включая Россию, а также страны бывшего СССР */
         }
 
         void createCircles() {
@@ -507,7 +531,8 @@ public class ClientWindow extends JFrame {
             int size = propeller.getSize() < 1 ? 1 : propeller.getSize() > 100 ? 100 : propeller.getSize();
             int x = (int) (Math.random() * F_WIDTH * 0.8);
             int y = (int) (Math.random() * F_HEIGHT * 0.45);
-            Circle circle = new Circle(propeller.getSpeed(), propeller.getMaxWeight(), size, propeller.getYear(), color, x, y, propeller.getDate());
+            Circle circle = new Circle(propeller.getSpeed(), propeller.getMaxWeight(), size,
+                    propeller.getYear(), color, x, y, propeller.getDate());
             circles.put(model, circle);
             xCoords.put(model, x);
             yCoords.put(model, y);
@@ -579,5 +604,6 @@ public class ClientWindow extends JFrame {
             colorBox.addItem(colors[i]);
         }
         createdString = resourceBundle.getString("created");
+        maxTipStr = resourceBundle.getString("maxTipStr");
     }
 }
