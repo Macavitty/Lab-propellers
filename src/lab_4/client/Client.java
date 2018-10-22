@@ -46,20 +46,20 @@ public class Client {
                         System.out.println("* Have a good day *");
                         System.exit(0);
                     }*/
-                    oos.writeObject("getMap"); // send command to server
+                   /* oos.writeObject("getMap"); // send command to server
                     Map<String, Karlson.Propeller> got = (Map<String, Karlson.Propeller>) ois.readObject();
                     if (!got.equals(map)) {
                         map = got;
                         clientWindow.refreshMap(map);
                         System.out.println("refresh" + map.toString());
                     }
-                    oos.flush();
+                    oos.flush(); */
                 }
 
             } catch (UnknownHostException e) {
                 System.out.println("* smth fishy about host " + hostName + " *");
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 System.out.println("* cannot connect to " + hostName + " *");
                 try {
                     Thread.sleep(2000);

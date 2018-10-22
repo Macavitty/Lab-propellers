@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import lab_4.PropellerCollection;
 import lab_4.story_components.Karlson;
 
-import java.io.File;
 import java.sql.*;
 
 import java.sql.SQLException;
@@ -31,7 +30,7 @@ public class DBManager {
             conn = DriverManager.getConnection(dbURL, username, password);
             statement = conn.createStatement();
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
     }
 
@@ -81,12 +80,12 @@ public class DBManager {
             while (propellerDB.next()) {
                 collection.add(toJson(propellerDB));
             }
-            System.out.println("got from db");
-            System.out.println(collection.getPropellerMap().toString());
+            //System.out.println("got from db");
+            //System.out.println(collection.getPropellerMap().toString());
             return collection;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return null;
         }
     }
@@ -120,7 +119,7 @@ public class DBManager {
             getCollectionFromDB();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -136,7 +135,7 @@ public class DBManager {
                     statement.executeUpdate();
 
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
             });
     }
